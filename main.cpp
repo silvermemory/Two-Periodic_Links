@@ -55,6 +55,6 @@ int main(void)
     }
     
     FV.freeTDVector(combine_codes);
-	system("pause");
+    
     return 0;
 }
