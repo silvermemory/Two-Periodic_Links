@@ -188,7 +188,7 @@ void InputValidation::getCombCodes(vector<vector<tuple<char,int,bool>>> *combine
             if (it_str->length() == 1) {
                 combine_codes->push_back(vector<tuple<char,int,bool>>());
             } else {
-                string pattern = "[HhVvOoUu][[:digit:]]+(\\+|-))";
+                string pattern = "[HhVvOoUu][[:digit:]]+(\\+|-)";
                 regex reg(pattern);
                 
                 sregex_iterator currentMatch(it_str->begin(), it_str->end(), reg);
