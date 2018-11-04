@@ -20,7 +20,8 @@ public:
     FreeVectors();
     void freeVector(vector<tuple<char,int,char>> *vectors);
     void freeStrVector(vector<string> *str);
-    void freeTDVector(vector<vector<tuple<char,int,char>>> *vectors);
+    void freeTDVector(vector<vector<tuple<char,int,bool>>> *vectors);
+    void freeVector_Bool(vector<tuple<char,int,bool>> *vectors);
 };
 
 #endif /* FreeVectors_hpp */

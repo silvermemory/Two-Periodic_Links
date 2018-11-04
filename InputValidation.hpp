@@ -21,9 +21,9 @@ public:
     InputValidation();
     bool isRepeatPoint(vector<tuple<char,int,char>> *vct, int *index);
     bool basic_Validation(string codes);
-    //bool second_Validation(string codes);
-    bool third_Validation(string codes);
-    void getCombCodes(vector<vector<tuple<char,int,char>>> *combine_codes,string codes);
+    bool second_Validation(string codes);
+    void getCombCodes(vector<vector<tuple<char,int,bool>>> *combine_codes,string codes);
+    string checkSpace(string input);
 };
 
 #endif /* InputValidation_hpp */

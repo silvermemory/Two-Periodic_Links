@@ -31,7 +31,16 @@ void FreeVectors::freeVector(vector<tuple<char,int,char>> *vectors) {
     vectors = NULL;
 }
 
-void FreeVectors::freeTDVector(vector<vector<tuple<char,int,char>>> *vectors) {
+void FreeVectors::freeVector_Bool(vector<tuple<char,int,bool>> *vectors) {
+    vectors->clear();
+    vectors->resize(0);
+    vectors->shrink_to_fit();
+    //vector<pair<char,int>>().swap(*vectors);
+    delete vectors;
+    vectors = NULL;
+}
+
+void FreeVectors::freeTDVector(vector<vector<tuple<char,int,bool>>> *vectors) {
     vectors->clear();
     vectors->resize(0);
     vectors->shrink_to_fit();

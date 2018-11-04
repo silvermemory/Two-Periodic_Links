@@ -13,13 +13,9 @@ using namespace std;
 
 int main(void)
 {
-    vector<vector<tuple<char,int,char>>> *combine_codes = new vector<vector<tuple<char,int,char>>>();
+    vector<vector<tuple<char,int,bool>>> *combine_codes = new vector<vector<tuple<char,int,bool>>>();
     InputValidation IV;
     FreeVectors FV;
-    
-    //string codes = "h1+v1-o1-u2+,h2+u1+v2+o2+";
-    //getCombCodes(combine_codes, codes);
-    //second_Validation(codes);
     
     string codes = "";
     
@@ -27,9 +23,7 @@ int main(void)
     bool b_valid = false;
     cout << "Codes are consisting of types, indexs and signs of orientations of points." << endl;
     cout << "Please use comma to seperate different circles of point." << endl;
-    cout << "Type: h(Horizontal), v(Vertical), o(Overcorssing), u(Undercrossing)" << endl; // d(Disjoint)
-    //cout << "Signs of orientation for disjoint links + and - means clockwise and anticlockwise seperately" << endl;
-    cout << "The code cannot end with comma which hint that input process might not be completed." << endl;
+    cout << "Type: h(Horizontal), v(Vertical), o(Overcorssing), u(Undercrossing)" << endl;
     cout << "e.g: h1+v1-o1-u2+,h2+u1-v2+o2+" << endl;
     cout << "Please input your codes:" << endl;
     
@@ -37,21 +31,27 @@ int main(void)
         if (all_satisfy == false)
             cout << "Please check and input codes again" << endl;
         
-        cin >> codes;
+        getline(cin,codes);
+        if (codes.empty() == false)
+            codes = IV.checkSpace(codes);
         
         if ((b_valid = IV.basic_Validation(codes))) {
-            if ((all_satisfy = IV.third_Validation(codes))) {
+            if ((all_satisfy = IV.second_Validation(codes))) {
                 cout << "Input codes passed all checks, your code is: ";
                 IV.getCombCodes(combine_codes, codes);
             }
         }
     }
     
-    for (vector<vector<tuple<char,int,char>>>::iterator it = combine_codes->begin();it != combine_codes->end(); ++it) {
-        for (vector<tuple<char,int,char>>::iterator it_tp = it->begin(); it_tp != it->end(); ++it_tp) {
-            cout << get<0>(*it_tp) << get<1>(*it_tp) << get<2>(*it_tp);
+    for (vector<vector<tuple<char,int,bool>>>::iterator it = combine_codes->begin();it != combine_codes->end(); ++it) {
+        if (it->empty() == false) {
+            for (vector<tuple<char,int,bool>>::iterator it_tp = it->begin(); it_tp != it->end(); ++it_tp) {
+                cout << get<0>(*it_tp) << get<1>(*it_tp) << get<2>(*it_tp);
+            }
+            cout << endl;
+        } else {
+            cout << "," << endl;
         }
-        cout << "   ";
     }
     
     FV.freeTDVector(combine_codes);
