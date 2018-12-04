@@ -13,17 +13,16 @@
 #include <sstream>
 #include <regex>
 
-using namespace std;
-
 class InputValidation
 {
 public:
     InputValidation();
-    bool isRepeatPoint(vector<tuple<char,int,char>> *vct, int *index);
-    bool basic_Validation(string codes);
-    bool second_Validation(string codes);
-    void getCombCodes(vector<vector<tuple<char,int,bool>>> *combine_codes,string codes);
-    string checkSpace(string input);
+    bool isRepeatPoint(std::vector<std::tuple<char,int,char>> *vct, int *index);
+    bool basic_Validation(std::string codes);
+    bool second_Validation(std::string codes,std::vector<std::tuple<char,int,bool>> *hor_vertice, std::vector<std::tuple<char,int,bool>> *ver_vertice, std::vector<std::tuple<char,int,bool>> *cross_vertice);
+    void getCombCodes(std::vector<std::vector<std::tuple<char,int,bool>>> *combine_codes,std::string codes);
+//    void getCombCodes_2(vector<vector<tuple<char,int,bool>>> *combine_codes,string codes);
+    std::string checkSpace(std::string input);
 };
 
 #endif /* InputValidation_hpp */

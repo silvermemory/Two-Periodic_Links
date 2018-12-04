@@ -13,7 +13,7 @@ FreeVectors::FreeVectors()
     
 }
 
-void FreeVectors::freeStrVector(vector<string> *str) {
+void FreeVectors::freeStrVector(std::vector<std::string> *str) {
     str->clear();
     str->resize(0);
     str->shrink_to_fit();
@@ -22,7 +22,7 @@ void FreeVectors::freeStrVector(vector<string> *str) {
     str = NULL;
 }
 
-void FreeVectors::freeVector(vector<tuple<char,int,char>> *vectors) {
+void FreeVectors::freeVector(std::vector<std::tuple<char,int,char>> *vectors) {
     vectors->clear();
     vectors->resize(0);
     vectors->shrink_to_fit();
@@ -31,7 +31,7 @@ void FreeVectors::freeVector(vector<tuple<char,int,char>> *vectors) {
     vectors = NULL;
 }
 
-void FreeVectors::freeVector_Bool(vector<tuple<char,int,bool>> *vectors) {
+void FreeVectors::freeVector_Bool(std::vector<std::tuple<char,int,bool>> *vectors) {
     vectors->clear();
     vectors->resize(0);
     vectors->shrink_to_fit();
@@ -40,7 +40,7 @@ void FreeVectors::freeVector_Bool(vector<tuple<char,int,bool>> *vectors) {
     vectors = NULL;
 }
 
-void FreeVectors::freeTDVector(vector<vector<tuple<char,int,bool>>> *vectors) {
+void FreeVectors::freeTDVector(std::vector<std::vector<std::tuple<char,int,bool>>> *vectors) {
     vectors->clear();
     vectors->resize(0);
     vectors->shrink_to_fit();
