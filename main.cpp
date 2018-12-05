@@ -107,26 +107,27 @@ int main(void)
 //    int num_hor_edges = (int)hor_vertice->size() + 1;
 //    int num_ver_edges = (int)ver_vertice->size() + 1;
     
-    Graph::vertex_descriptor vertice_collection[num_vertices];
+    Graph::vertex_descriptor *vertice_collection = new Graph::vertex_descriptor[num_vertices];
+//    Graph::vertex_descriptor vertice_collection[num_vertices];
     Vertice_Ref format = get(boost::vertex_name, g);
     
     int position = 0;
     // add vertices into the graph
-    vertice_collection[position] = boost::add_vertex(corner_vertice,g);
+    *vertice_collection = boost::add_vertex(corner_vertice,g);
     position++;
     
     for (std::vector<std::tuple<char,int,bool>>::iterator it = hor_vertice->begin(); it != hor_vertice->end(); ++it) {
-        vertice_collection[position] = boost::add_vertex(*it,g);
+        *(vertice_collection + position) = boost::add_vertex(*it,g);
         position++;
     }
     
     for (std::vector<std::tuple<char,int,bool>>::iterator it = ver_vertice->begin(); it != ver_vertice->end(); ++it) {
-        vertice_collection[position] = boost::add_vertex(*it,g);
+        *(vertice_collection + position) = boost::add_vertex(*it,g);
         position++;
     }
     
     for (std::vector<std::tuple<char,int,bool>>::iterator it = cross_vertice->begin(); it != cross_vertice->end(); ++it) {
-        vertice_collection[position] = boost::add_vertex(*it, g);
+        *(vertice_collection + position) = boost::add_vertex(*it, g);
         position++;
     }
     
@@ -140,120 +141,127 @@ int main(void)
     std::pair<vertex_iter, vertex_iter> vp;
     std::pair<vertex_iter, vertex_iter> vp2;
     // add horizontal edges to the graph and build the horizontal edge set
-    Edge horizontal_set[hor_vertice->size()+1];
+    Edge *horizontal_set = new Edge[hor_vertice->size()+1];
     position = 0;
     int prefix_pos = 1;
+    
+    std::cout << "Number of edges in the horizontal edge set:" << hor_vertice->size() + 1 << std::endl;
     for (int i = 0; i < hor_vertice->size(); ++i) {
         if (i != hor_vertice->size()-1) {
-            horizontal_set[i] = std::make_pair(format[vertice_collection[prefix_pos+i]], format[vertice_collection[prefix_pos+i+1]]);
-            std::cout << "(" << get<0>(format[vertice_collection[prefix_pos+i]]) << get<1>(format[vertice_collection[prefix_pos+i]]) << get<2>(format[vertice_collection[prefix_pos+i]]) << "->";
-            std::cout << get<0>(format[vertice_collection[prefix_pos+i+1]]) << get<1>(format[vertice_collection[prefix_pos+i+1]]) << get<2>(format[vertice_collection[prefix_pos+i+1]]) << ") ";
+            *(horizontal_set + i) = std::make_pair(format[*(vertice_collection + prefix_pos + i)], format[*(vertice_collection+prefix_pos + i + 1)]);
             for (vp = boost::vertices(g); vp.first != vp.second; ++vp.first) {
-                if (format[*vp.first] == format[vertice_collection[prefix_pos+i]]) {
+                if (format[*vp.first] == format[*(vertice_collection + prefix_pos + i)]) {
                     for (vp2 = boost::vertices(g); vp2.first != vp2.second; ++vp2.first) {
-                        if (format[*vp2.first] == format[vertice_collection[prefix_pos+i+1]]) {
+                        if (format[*vp2.first] == format[*(vertice_collection + prefix_pos + i + 1)]) {
                             boost::add_edge(*vp.first, *vp2.first,g);
+                            break;
                         }
                     }
-                    
+                    break;
                 }
             }
 //            addEdges(format[vertice_collection[prefix_pos+i]], format[vertice_collection[prefix_pos+i+1]], format, g);
         }
         else {
-            horizontal_set[i] = std::make_pair(format[vertice_collection[prefix_pos+i]], format[vertice_collection[0]]);
-            std::cout << "(" << get<0>(format[vertice_collection[prefix_pos+i]]) << get<1>(format[vertice_collection[prefix_pos+i]]) << get<2>(format[vertice_collection[prefix_pos+i]]) << "->";
-            std::cout << get<0>(format[vertice_collection[0]]) << get<1>(format[vertice_collection[0]]) << get<2>(format[vertice_collection[0]]) << ") ";
+            *(horizontal_set + i) = std::make_pair(format[*(vertice_collection + prefix_pos + i)], format[*vertice_collection]);
             for (vp = boost::vertices(g); vp.first != vp.second; ++vp.first) {
-                if (format[*vp.first] == format[vertice_collection[prefix_pos+i]]) {
+                if (format[*vp.first] == format[*(vertice_collection + prefix_pos + i)]) {
                     for (vp2 = boost::vertices(g); vp2.first != vp2.second; ++vp2.first) {
-                        if (format[*vp2.first] == format[vertice_collection[0]]) {
+                        if (format[*vp2.first] == format[*vertice_collection]) {
                             boost::add_edge(*vp.first, *vp2.first,g);
+                            break;
                         }
                     }
-                    
+                    break;
                 }
             }
 //            addEdges(format[vertice_collection[prefix_pos+i]], format[vertice_collection[0]], format, g);
-            horizontal_set[i+1] = std::make_pair(format[vertice_collection[0]], format[vertice_collection[prefix_pos]]);
-            std::cout << "(" << get<0>(format[vertice_collection[0]]) << get<1>(format[vertice_collection[0]]) << get<2>(format[vertice_collection[0]]) << "->";
-            std::cout << get<0>(format[vertice_collection[prefix_pos]]) << get<1>(format[vertice_collection[prefix_pos]]) << get<2>(format[vertice_collection[prefix_pos]]) << ") ";
+            *(horizontal_set + i + 1) = std::make_pair(format[*vertice_collection], format[*(vertice_collection + prefix_pos)]);
             for (vp = boost::vertices(g); vp.first != vp.second; ++vp.first) {
-                if (format[*vp.first] == format[vertice_collection[0]]) {
+                if (format[*vp.first] == format[*vertice_collection]) {
                     for (vp2 = boost::vertices(g); vp2.first != vp2.second; ++vp2.first) {
-                        if (format[*vp2.first] == format[vertice_collection[prefix_pos]]) {
+                        if (format[*vp2.first] == format[*(vertice_collection + prefix_pos)]) {
                             boost::add_edge(*vp.first, *vp2.first,g);
+                            break;
                         }
                     }
+                    break;
                 }
             }
 //            addEdges(format[vertice_collection[0]], format[vertice_collection[prefix_pos]], format, g);
         }
     }
-    std::cout << "Number of edges in the horizontal edge set:" << hor_vertice->size() + 1 << std::endl;
+    for (int i = 0; i < hor_vertice->size() + 1; ++i) {
+        std::cout << "(" << get<0>(std::get<0>(*(horizontal_set + i))) << get<1>(std::get<0>(*(horizontal_set + i))) << get<2>(std::get<0>(*(horizontal_set + i))) << "->";
+        std::cout << get<0>(std::get<1>(*(horizontal_set + i))) << get<1>(std::get<1>(*(horizontal_set + i))) << get<2>(std::get<1>(*(horizontal_set + i))) << ") ";
+    }
+    std::cout << "\n";
     
     // add vertical edges to the graph and build the vertical edge set
-    Edge vertical_set[ver_vertice->size()+1];
+    Edge *vertical_set = new Edge[ver_vertice->size()+1];
     prefix_pos = (int)hor_vertice->size() + 1;
+    
+    std::cout << "Number of edges in the vertical edge set:" << ver_vertice->size() + 1 << std::endl;
     for (int i = 0; i < ver_vertice->size(); ++i) {
         if (i != ver_vertice->size()-1) {
-            vertical_set[i] = std::make_pair(format[vertice_collection[prefix_pos+i]], format[vertice_collection[prefix_pos+i+1]]);
-            std::cout << "(" << get<0>(format[vertice_collection[prefix_pos+i]]) << get<1>(format[vertice_collection[prefix_pos+i]]) << get<2>(format[vertice_collection[prefix_pos+i]]) << "->";
-            std::cout << get<0>(format[vertice_collection[prefix_pos+i+1]]) << get<1>(format[vertice_collection[prefix_pos+i+1]]) << get<2>(format[vertice_collection[prefix_pos+i+1]]) << ") ";
-
+            *(vertical_set + i) = std::make_pair(format[*(vertice_collection + prefix_pos + i)], format[*(vertice_collection + prefix_pos+i + 1)]);
             for (vp = boost::vertices(g); vp.first != vp.second; ++vp.first) {
-                if (format[*vp.first] == format[vertice_collection[prefix_pos+i]]) {
+                if (format[*vp.first] == format[*(vertice_collection + prefix_pos + i)]) {
                     for (vp2 = boost::vertices(g); vp2.first != vp2.second; ++vp2.first) {
-                        if (format[*vp2.first] == format[vertice_collection[prefix_pos+i+1]]) {
+                        if (format[*vp2.first] == format[*(vertice_collection + prefix_pos+i + 1)]) {
                             boost::add_edge(*vp.first, *vp2.first,g);
+                            break;
                         }
                     }
-
+                    break;
                 }
             }
 //            addEdges(format[vertice_collection[prefix_pos+i]], format[vertice_collection[prefix_pos+i+1]], format, g);
         }
         else {
-            vertical_set[i] = std::make_pair(format[vertice_collection[prefix_pos+i]], format[vertice_collection[0]]);
-            std::cout << "(" << get<0>(format[vertice_collection[prefix_pos+i]]) << get<1>(format[vertice_collection[prefix_pos+i]]) << get<2>(format[vertice_collection[prefix_pos+i]]) << "->";
-            std::cout << get<0>(format[vertice_collection[0]]) << get<1>(format[vertice_collection[0]]) << get<2>(format[vertice_collection[0]]) << ") ";
+            *(vertical_set + i) = std::make_pair(format[*(vertice_collection + prefix_pos + i)], format[*vertice_collection]);
             for (vp = boost::vertices(g); vp.first != vp.second; ++vp.first) {
-                if (format[*vp.first] == format[vertice_collection[prefix_pos+i]]) {
+                if (format[*vp.first] == format[*(vertice_collection + prefix_pos+i)]) {
                     for (vp2 = boost::vertices(g); vp2.first != vp2.second; ++vp2.first) {
-                        if (format[*vp2.first] == format[vertice_collection[0]]) {
+                        if (format[*vp2.first] == format[*vertice_collection]) {
                             boost::add_edge(*vp.first, *vp2.first,g);
+                            break;
                         }
                     }
-
+                    break;
                 }
             }
 //            addEdges(format[vertice_collection[prefix_pos+i]], format[vertice_collection[0]], format, g);
-            vertical_set[i+1] = std::make_pair(format[vertice_collection[0]], format[vertice_collection[prefix_pos]]);
-            std::cout << "(" << get<0>(format[vertice_collection[0]]) << get<1>(format[vertice_collection[0]]) << get<2>(format[vertice_collection[0]]) << "->";
-            std::cout << get<0>(format[vertice_collection[prefix_pos]]) << get<1>(format[vertice_collection[prefix_pos]]) << get<2>(format[vertice_collection[prefix_pos]]) << ") ";
+            *(vertical_set + i + 1) = std::make_pair(format[*vertice_collection], format[*(vertice_collection + prefix_pos)]);
             for (vp = boost::vertices(g); vp.first != vp.second; ++vp.first) {
-                if (format[*vp.first] == format[vertice_collection[0]]) {
+                if (format[*vp.first] == format[*vertice_collection]) {
                     for (vp2 = boost::vertices(g); vp2.first != vp2.second; ++vp2.first) {
-                        if (format[*vp2.first] == format[vertice_collection[prefix_pos]]) {
+                        if (format[*vp2.first] == format[*(vertice_collection + prefix_pos)]) {
                             boost::add_edge(*vp.first, *vp2.first,g);
+                            break;
                         }
                     }
-
+                    break;
                 }
             }
 //            addEdges(format[vertice_collection[0]], format[vertice_collection[prefix_pos]], format, g);
         }
     }
-    std::cout << "Number of edges in the vertical edge set:" << ver_vertice->size() + 1 << std::endl;
-
+    for (int i = 0; i < ver_vertice->size() + 1; ++i) {
+        std::cout << "(" << get<0>(std::get<0>(*(vertical_set + i))) << get<1>(std::get<0>(*(vertical_set + i))) << get<2>(std::get<0>(*(vertical_set + i))) << "->";
+        std::cout << get<0>(std::get<1>(*(vertical_set + i))) << get<1>(std::get<1>(*(vertical_set + i))) << get<2>(std::get<1>(*(vertical_set + i))) << ") ";
+    }
+    std::cout << "\n";
+    
     // add component edges to the graph and build the vertical edge set
     int num_comp_edges = 0;
     for (std::vector<std::vector<std::tuple<char,int,bool>>>::iterator it = combine_codes->begin(); it != combine_codes->end(); ++it) {
         num_comp_edges += it->size();
     }
     std::cout << "Number of edges in the component edge set:" << num_comp_edges << std::endl;
-
-    Edge comp_set_origin[num_comp_edges], comp_set_against[num_comp_edges];
+    
+    Edge *comp_set_origin = new Edge[num_comp_edges];
+    Edge *comp_set_against = new Edge[num_comp_edges];
     position = 0;
     int prefix_pos_v = (int)hor_vertice->size();
     int prefix_pos_c = (int)hor_vertice->size() + (int)ver_vertice->size();
@@ -262,8 +270,6 @@ int main(void)
             for (std::vector<std::tuple<char,int,bool>>::iterator it_tp = it->begin(); it_tp != it->end(); ++it_tp) {
                 int first_pos = 0, second_pos = 0;
                 if (it_tp != it->end() - 1) {
-                    std::cout << "(" << get<0>(*it_tp) << get<1>(*it_tp) << get<2>(*it_tp) << "->";
-                    std::cout << get<0>(*(it_tp+1)) << get<1>(*(it_tp+1)) << get<2>(*(it_tp+1)) << ") ";
                     // get the vertice position in the vertice set
                     if (get<0>(*it_tp) == 'h')
                         first_pos = get<1>(*it_tp);
@@ -272,32 +278,29 @@ int main(void)
                     else if (get<0>(*it_tp) == 'u' || get<0>(*it_tp) == 'o')
                         first_pos = prefix_pos_c + get<1>(*it_tp);
 
-                    if (get<0>(*(it_tp+1)) == 'h')
-                        second_pos = get<1>(*(it_tp+1));
-                    else if (get<0>(*(it_tp+1)) == 'v')
-                        second_pos = prefix_pos_v + get<1>(*(it_tp+1));
-                    else if (get<0>(*(it_tp+1)) == 'u' || get<0>(*(it_tp+1)) == 'o')
-                        second_pos = prefix_pos_c + get<1>(*(it_tp+1));
+                    if (get<0>(*(it_tp + 1)) == 'h')
+                        second_pos = get<1>(*(it_tp + 1));
+                    else if (get<0>(*(it_tp + 1)) == 'v')
+                        second_pos = prefix_pos_v + get<1>(*(it_tp + 1));
+                    else if (get<0>(*(it_tp + 1)) == 'u' || get<0>(*(it_tp + 1)) == 'o')
+                        second_pos = prefix_pos_c + get<1>(*(it_tp + 1));
 
-                    comp_set_origin[position] = std::make_pair(format[vertice_collection[first_pos]], format[vertice_collection[second_pos]]);
-                    comp_set_against[position] = std::make_pair(format[vertice_collection[second_pos]], format[vertice_collection[first_pos]]);
+                    *(comp_set_origin + position) = std::make_pair(format[*(vertice_collection + first_pos)], format[*(vertice_collection + second_pos)]);
+                    *(comp_set_against + position) = std::make_pair(format[*(vertice_collection + second_pos)], format[*(vertice_collection + first_pos)]);
                     position++;
                     for (vp = boost::vertices(g); vp.first != vp.second; ++vp.first) {
-                        if (format[*vp.first] == format[vertice_collection[first_pos]]) {
+                        if (format[*vp.first] == format[*(vertice_collection + first_pos)]) {
                             for (vp2 = boost::vertices(g); vp2.first != vp2.second; ++vp2.first) {
-                                if (format[*vp2.first] == format[vertice_collection[second_pos]]) {
+                                if (format[*vp2.first] == format[*(vertice_collection + second_pos)]) {
                                     boost::add_edge(*vp.first, *vp2.first,g);
+                                    break;
                                 }
                             }
-
+                            break;
                         }
                     }
 //                    addEdges(format[vertice_collection[first_pos]], format[vertice_collection[second_pos]], format, g);
                 } else {
-                    std::cout << "(" << get<0>(*it_tp) << get<1>(*it_tp) << get<2>(*it_tp) << "->";
-                    std::cout << get<0>(*(it_tp-(it->size()-1))) << get<1>(*(it_tp-(it->size()-1))) << get<2>(*(it_tp-(it->size()-1))) << ") " << std::endl;
-
-
                     if (get<0>(*it_tp) == 'h')
                         first_pos = get<1>(*it_tp);
                     else if (get<0>(*it_tp) == 'v')
@@ -305,23 +308,24 @@ int main(void)
                     else if (get<0>(*it_tp) == 'u' || get<0>(*it_tp) == 'o')
                         first_pos = prefix_pos_c + get<1>(*it_tp);
 
-                    if (get<0>(*(it_tp-(it->size()-1))) == 'h')
-                        second_pos = get<1>(*(it_tp-(it->size()-1)));
-                    else if (get<0>(*(it_tp-(it->size()-1))) == 'v')
-                        second_pos = prefix_pos_v + get<1>(*(it_tp-(it->size()-1)));
-                    else if (get<0>(*(it_tp-(it->size()-1))) == 'u' || get<0>(*(it_tp-(it->size()-1))) == 'o')
-                        second_pos = prefix_pos_c + get<1>(*(it_tp-(it->size()-1)));
-                    comp_set_origin[position] = std::make_pair(format[vertice_collection[first_pos]], format[vertice_collection[second_pos]]);
-                    comp_set_against[position] = std::make_pair(format[vertice_collection[second_pos]], format[vertice_collection[first_pos]]);
+                    if (get<0>(*(it_tp - (it->size() - 1))) == 'h')
+                        second_pos = get<1>(*(it_tp - (it->size() - 1)));
+                    else if (get<0>(*(it_tp - (it->size() - 1))) == 'v')
+                        second_pos = prefix_pos_v + get<1>(*(it_tp - (it->size() - 1)));
+                    else if (get<0>(*(it_tp - (it->size() - 1))) == 'u' || get<0>(*(it_tp - (it->size() - 1))) == 'o')
+                        second_pos = prefix_pos_c + get<1>(*(it_tp - (it->size() - 1)));
+                    *(comp_set_origin + position) = std::make_pair(format[*(vertice_collection + first_pos)], format[*(vertice_collection + second_pos)]);
+                    *(comp_set_against + position) = std::make_pair(format[*(vertice_collection + second_pos)], format[*(vertice_collection + first_pos)]);
                     position++;
                     for (vp = boost::vertices(g); vp.first != vp.second; ++vp.first) {
-                        if (format[*vp.first] == format[vertice_collection[first_pos]]) {
+                        if (format[*vp.first] == format[*(vertice_collection + first_pos)]) {
                             for (vp2 = boost::vertices(g); vp2.first != vp2.second; ++vp2.first) {
-                                if (format[*vp2.first] == format[vertice_collection[second_pos]]) {
+                                if (format[*vp2.first] == format[*(vertice_collection + second_pos)]) {
                                     boost::add_edge(*vp.first, *vp2.first,g);
+                                    break;
                                 }
                             }
-
+                            break;
                         }
                     }
 //                    addEdges(format[vertice_collection[first_pos]], format[vertice_collection[second_pos]], format, g);
@@ -329,21 +333,39 @@ int main(void)
             }
         }
     }
+    for (int i = 0; i < num_comp_edges; ++i) {
+        std::cout << "(" << get<0>(std::get<0>(*(comp_set_origin + i))) << get<1>(std::get<0>(*(comp_set_origin + i))) << get<2>(std::get<0>(*(comp_set_origin + i))) << "->";
+        std::cout << get<0>(std::get<1>(*(comp_set_origin + i))) << get<1>(std::get<1>(*(comp_set_origin + i))) << get<2>(std::get<1>(*(comp_set_origin + i))) << ") ";
+    }
+    std::cout << "\n";
     
     boost::graph_traits<Graph>::edge_iterator  ei, ei_end ;
     std::cout << "Edge in g  = [ ";
     for(boost::tie(ei, ei_end)=boost::edges(g); ei != ei_end; ++ei) {
-        std::cout<<"("<< get<0>(format[boost::source(*ei, g)]) << get<1>(format[boost::source(*ei,g)]) << get<2>(format[boost::source(*ei,g)]) << " , ";
-        std::cout << get<0>(format[boost::target(*ei, g)]) << get<1>(format[boost::target(*ei,g)]) << get<2>(format[boost::target(*ei,g)]) <<")"<< std::endl;
+        std::cout<<"("<< get<0>(format[boost::source(*ei, g)]) << get<1>(format[boost::source(*ei,g)]) << get<2>(format[boost::source(*ei,g)]) << "->";
+        std::cout << get<0>(format[boost::target(*ei, g)]) << get<1>(format[boost::target(*ei,g)]) << get<2>(format[boost::target(*ei,g)]) <<")";
     }
     std::cout<<"]"<<std::endl;
     
-    int total_edges = num_comp_edges + (int)(ver_vertice->size()+1) + (int)(hor_vertice->size()+1);
+    int total_edges = num_comp_edges + (int)(ver_vertice->size() + 1) + (int)(hor_vertice->size() + 1);
     std::cout << "Total number of edges in the graph: " << total_edges << std::endl;
     
     FV.freeVector_Bool(hor_vertice);
     FV.freeVector_Bool(ver_vertice);
     FV.freeVector_Bool(cross_vertice);
     FV.freeTDVector(combine_codes);
+    
+    // delete pointers
+    delete[] vertice_collection;
+    vertice_collection = NULL;
+    delete[] horizontal_set;
+    horizontal_set = NULL;
+    delete[] vertical_set;
+    vertical_set = NULL;
+    delete[] comp_set_origin;
+    comp_set_origin = NULL;
+    delete[] comp_set_against;
+    comp_set_against = NULL;
+    
     return 0;
 }
