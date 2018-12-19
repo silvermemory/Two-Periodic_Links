@@ -245,68 +245,6 @@ void InputValidation::getCombCodes(std::vector<std::vector<std::tuple<char,int,b
     FV.freeStrVector(str);
 }
 
-//void InputValidation::getCombCodes_2(vector<vector<tuple<char,int,bool>>> *combine_codes,string codes) {
-//    size_t find;
-//    bool endWithComma = false;
-//    vector<string> *str = new vector<string>();
-//    vector<tuple<char,int,bool>> *paragraph = new vector<tuple<char,int,bool>>;
-//    
-//    if (codes.length() == 0) {
-//        combine_codes->push_back(vector<tuple<char,int,bool>>());
-//    } else {
-//        if (codes.back() == ',')
-//            endWithComma = true;
-//        else
-//            codes.append(",");
-//        
-//        while (codes.empty() == 0) {
-//            find = codes.find(",");
-//            str->push_back(codes.substr(0,find+1));
-//            codes.erase(0,find+1);
-//        }
-//        
-//        for (vector<string>::iterator it_str = str->begin(); it_str != str->end(); ++it_str) {
-//            if (it_str->length() == 1) {
-//                combine_codes->push_back(vector<tuple<char,int,bool>>());
-//            } else {
-//                string pattern = "[hvou][[:digit:]]+(\\+|-)";
-//                regex reg(pattern);
-//                
-//                sregex_iterator currentMatch(it_str->begin(), it_str->end(), reg);
-//                sregex_iterator lastMatch;
-//                while (currentMatch != lastMatch) {
-//                    char type;
-//                    int index;
-//                    char char_sign;
-//                    bool sign;
-//                    smatch match = *currentMatch;
-//                    stringstream ss(match.str());
-//                    ss >> type >> index >> char_sign;
-//                    
-//                    if (type == 'o' || type == 'u')
-//                        type = 'c';
-//                    
-//                    if (char_sign == '+')
-//                        sign = true;
-//                    else
-//                        sign = false;
-//                    
-//                    paragraph->push_back(make_tuple(type,index,sign));
-//                    currentMatch++;
-//                }
-//                combine_codes->push_back(*paragraph);
-//                paragraph->clear();
-//            }
-//        }
-//    }
-//    
-//    if (endWithComma)
-//        combine_codes->push_back(vector<tuple<char,int,bool>>());
-//    
-//    FV.freeVector_Bool(paragraph);
-//    FV.freeStrVector(str);
-//}
-
 std::string InputValidation::checkSpace(std::string codes) {
     codes.erase(remove_if(codes.begin(), codes.end(), [](unsigned char x){ return isspace(x);}),codes.end());
     return codes;

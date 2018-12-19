@@ -47,3 +47,19 @@ void FreeVectors::freeTDVector(std::vector<std::vector<std::tuple<char,int,bool>
     delete vectors;
     vectors = NULL;
 }
+
+void FreeVectors::freeEdgePair(std::vector<std::pair<std::pair<std::tuple<char,int,bool>, std::tuple<char,int,bool>>,bool>> *edgePair) {
+    edgePair->clear();
+    edgePair->resize(0);
+    edgePair->shrink_to_fit();
+    delete edgePair;
+    edgePair = NULL;
+}
+
+void FreeVectors::freeCycleSet(std::vector<std::vector<std::pair<std::pair<std::tuple<char,int,bool>, std::tuple<char,int,bool>>,bool>>> *set) {
+    set->clear();
+    set->resize(0);
+    set->shrink_to_fit();
+    delete set;
+    set = NULL;
+}
