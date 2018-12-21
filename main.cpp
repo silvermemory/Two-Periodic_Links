@@ -31,40 +31,71 @@ typedef std::vector<Edge_with_Sign> Edge_Pair;
 typedef std::tuple<char,int,bool> Vertice_Property;
 typedef std:: vector<std::vector<Edge_with_Sign>> Circle;
 
-Edge_with_Sign getNextEdge_Edge(Vertice_Property &point, bool &arcsign, Edge_Pair *edgePair, char &previous_type) {
+Edge_with_Sign getNextEdge_Edge(Vertice_Property &point, bool &arcsign, Edge_Pair *edgePair, Vertice_Property &previous, bool &h_not_exist, bool &v_not_exist) {
     Edge_with_Sign nextEdge;
-    char possible_type_1 = 'a', possible_type_2 = 'a';
     
     if (get<0>(point) == 'h') {
-        if (previous_type == 'h' || previous_type == 'c') {
-            possible_type_1 = 'o';
-            possible_type_2 = 'u';
-        } else if (previous_type == 'o' || previous_type == 'u') {
-            possible_type_1 = 'c';
-            possible_type_2 = 'h';
-        }
-    } else if (get<0>(point) == 'v') {
-        if (previous_type == 'v' || previous_type == 'c') {
-            possible_type_1 = 'o';
-            possible_type_2 = 'u';
-        } else if (previous_type == 'o' || previous_type == 'u') {
-            possible_type_1 = 'c';
-            possible_type_2 = 'v';
-        }
-    } else if (get<0>(point) == 'c') {
-        if (previous_type == 'h')
-            possible_type_1 = 'v';
-        else if (previous_type == 'v')
-            possible_type_1 = 'h';
-    }
-    
-    if (get<0>(point) == 'h' || get<0>(point) == 'v') {
         for (Edge_Pair::iterator it = edgePair->begin(); it != edgePair->end(); ++it) {
             if ((*it).first.first == point) {
                 if ((*it).second == arcsign) {
-                    if (get<0>((*it).first.second) == possible_type_1 || get<0>((*it).first.second) == possible_type_2) {
-                        nextEdge = (*it);
-                        break;
+                    if (get<0>(previous) == 'o' || get<0>(previous) == 'u') {
+                        if (get<0>((*it).first.second) == 'c' || get<0>((*it).first.second) == 'h') {
+                            nextEdge = (*it);
+                            break;
+                        }
+                    } else if (get<0>(previous) == 'h' && get<1>(point) == get<1>(previous)) {
+                        if (get<0>((*it).first.second) == 'c') {
+                            nextEdge = (*it);
+                            break;
+                        } else if (get<0>((*it).first.second) == 'h') {
+                            if (get<1>(point) != get<1>((*it).first.second)) {
+                                nextEdge = (*it);
+                                break;
+                            }
+                        }
+                    } else if (get<0>(previous) == 'c' || (get<0>(previous) == 'h' && get<1>(point) != get<1>(previous))) {
+                        if (get<0>((*it).first.second) == 'o' || get<0>((*it).first.second) == 'u') {
+                            nextEdge = (*it);
+                            break;
+                        } else if (get<0>((*it).first.second) == 'h') {
+                            if (get<1>(point) == get<1>((*it).first.second)) {
+                                nextEdge = (*it);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } else if (get<0>(point) == 'v') {
+        for (Edge_Pair::iterator it = edgePair->begin(); it != edgePair->end(); ++it) {
+            if ((*it).first.first == point) {
+                if ((*it).second == arcsign) {
+                    if (get<0>(previous) == 'o' || get<0>(previous) == 'u') {
+                        if (get<0>((*it).first.second) == 'c' || get<0>((*it).first.second) == 'v') {
+                            nextEdge = (*it);
+                            break;
+                        }
+                    } else if (get<0>(previous) == 'v' && get<1>(point) == get<1>(previous)) {
+                        if (get<0>((*it).first.second) == 'c') {
+                            nextEdge = (*it);
+                            break;
+                        } else if (get<0>((*it).first.second) == 'v') {
+                            if (get<1>(point) != get<1>((*it).first.second)) {
+                                nextEdge = (*it);
+                                break;
+                            }
+                        }
+                    } else if (get<0>(previous) == 'c' || (get<0>(previous) == 'v' && get<1>(point) != get<1>(previous))) {
+                        if (get<0>((*it).first.second) == 'o' || get<0>((*it).first.second) == 'u') {
+                            nextEdge = (*it);
+                            break;
+                        } else if (get<0>((*it).first.second) == 'v') {
+                            if (get<1>(point) == get<1>((*it).first.second)) {
+                                nextEdge = (*it);
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -73,9 +104,28 @@ Edge_with_Sign getNextEdge_Edge(Vertice_Property &point, bool &arcsign, Edge_Pai
         for (Edge_Pair::iterator it = edgePair->begin(); it != edgePair->end(); ++it) {
             if ((*it).first.first == point) {
                 if ((*it).second == arcsign) {
-                    if (get<0>((*it).first.second) == possible_type_1) {
-                        nextEdge = (*it);
-                        break;
+                    if (get<0>(previous) == 'v') {
+                        if (get<0>((*it).first.second) == 'h' || get<0>((*it).first.second) == 'c') {
+                            nextEdge = (*it);
+                            break;
+                        }
+                    } else if (get<0>(previous) == 'h')  {
+                        if (get<0>((*it).first.second) == 'v' || get<0>((*it).first.second) == 'c') {
+                            nextEdge = (*it);
+                            break;
+                        }
+                    } else if (get<0>(previous) == 'c') {
+                        if (!h_not_exist && v_not_exist) {
+                            if (get<0>((*it).first.second) == 'h') {
+                                nextEdge = (*it);
+                                break;
+                            }
+                        } else if (!v_not_exist && h_not_exist) {
+                            if (get<0>((*it).first.second) == 'v') {
+                                nextEdge = (*it);
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -169,16 +219,24 @@ int main(void)
 //        }
 //    }
     
-    std::string codes = "h1+o1+u2+v1-u1+o2+";
+    std::string codes = "h1+o1+u2+v1-u1+o2+"; //o1+u2+v1-u1+o2+
     boost::to_lower(codes);
     IV.second_Validation(codes,hor_vertice,ver_vertice,cross_vertice);
     IV.getCombCodes(combine_codes, codes);
+    bool v_not_exist = false, h_not_exist = false;
     
     // sort vertices by their index in ascending order.
     std::sort(hor_vertice->begin(),hor_vertice->end(),sortByIndex);
     std::sort(ver_vertice->begin(),ver_vertice->end(),sortByIndex);
     std::sort(cross_vertice->begin(),cross_vertice->end(),sortByIndex);
     
+    if (hor_vertice->size() == 0)
+        h_not_exist = true;
+    
+    if (ver_vertice->size() == 0)
+        v_not_exist = true;
+    
+    std::cout << "h exists: " << h_not_exist << ", v exists: " << v_not_exist << std::endl;
     int num_vertices = (int)hor_vertice->size() + (int)ver_vertice->size() + (int)cross_vertice->size() + 1;
     std::cout << num_vertices << " vertices" << std::endl;
     
@@ -394,7 +452,6 @@ int main(void)
             int index = get<1>(inputPair.first.second);
             int sign = get<2>(inputPair.first.second);
             bool arcsign;
-            char previous_type = 'a';
             Vertice_Property outPoint;
 
             if (get<0>(inputPair.first.second) == 'o') {
@@ -417,47 +474,79 @@ int main(void)
                 } else if (sign == false)
                     arcsign = inputPair.second;
             } else if (get<0>(inputPair.first.second) == 'h') {
-                previous_type = get<0>(inputPair.first.first);
                 if (sign == true) {
-                    if (get<0>(inputPair.first.first) == 'c' || get<0>(inputPair.first.first) == 'h')
+                    if (get<0>(inputPair.first.first) == 'c')
                         arcsign = inputPair.second;
                     else if (get<0>(inputPair.first.first) == 'o' || get<0>(inputPair.first.first) == 'u') {
                         if (inputPair.second == true)
                             arcsign = false;
                         else if (inputPair.second == false)
                             arcsign = true;
+                    } else if (get<0>(inputPair.first.first) == 'h') {
+                        if (get<1>(inputPair.first.first) == get<1>(inputPair.first.second)) {
+                            if (inputPair.second == true)
+                                arcsign = false;
+                            else if (inputPair.second == false)
+                                arcsign = true;
+                        } else if (get<1>(inputPair.first.first) != get<1>(inputPair.first.second))
+                            arcsign = inputPair.second;
                     }
                 } else if (sign == false) {
-                    if (get<0>(inputPair.first.first) == 'c' || get<0>(inputPair.first.first) == 'h') {
+                    if (get<0>(inputPair.first.first) == 'c') {
                         if (inputPair.second == true)
                             arcsign = false;
                         else if (inputPair.second == false)
                             arcsign = true;
                     } else if (get<0>(inputPair.first.first) == 'o' || get<0>(inputPair.first.first) == 'u')
                         arcsign = inputPair.second;
+                    else if (get<0>(inputPair.first.first) == 'h') {
+                        if (get<1>(inputPair.first.first) != get<1>(inputPair.first.second)) {
+                            if (inputPair.second == true)
+                                arcsign = false;
+                            else if (inputPair.second == false)
+                                arcsign = true;
+                        } else if (get<1>(inputPair.first.first) == get<1>(inputPair.first.second))
+                            arcsign = inputPair.second;
+                    }
                 }
             } else if (get<0>(inputPair.first.second) == 'v') {
-                previous_type = get<0>(inputPair.first.first);
                 if (sign == true) {
-                    if (get<0>(inputPair.first.first) == 'c' || get<0>(inputPair.first.first) == 'v') {
+                    
+                    if (get<0>(inputPair.first.first) == 'c') {
                         if (inputPair.second == false)
                             arcsign = true;
                         else if (inputPair.second == true)
                             arcsign = false;
                     } else if (get<0>(inputPair.first.first) == 'o' || get<0>(inputPair.first.first) == 'u')
                         arcsign = inputPair.second;
+                    else if (get<0>(inputPair.first.first) == 'v') {
+                        if (get<1>(inputPair.first.first) != get<1>(inputPair.first.second)) {
+                            if (inputPair.second == true)
+                                arcsign = false;
+                            else if (inputPair.second == false)
+                                arcsign = true;
+                        } else if (get<1>(inputPair.first.first) == get<1>(inputPair.first.second))
+                            arcsign = inputPair.second;
+                    }
                 } else if (sign == false) {
-                    if (get<0>(inputPair.first.first) == 'c' || get<0>(inputPair.first.first) == 'v')
+                    if (get<0>(inputPair.first.first) == 'c')
                         arcsign = inputPair.second;
                     else if (get<0>(inputPair.first.first) == 'o' || get<0>(inputPair.first.first) == 'u') {
                         if (inputPair.second == false)
                             arcsign = true;
                         else if (inputPair.second == true)
                             arcsign = false;
+                    } else if (get<0>(inputPair.first.first) == 'v') {
+                        if (get<1>(inputPair.first.first) == get<1>(inputPair.first.second)) {
+                            if (inputPair.second == true)
+                                arcsign = false;
+                            else if (inputPair.second == false)
+                                arcsign = true;
+                        } else if (get<1>(inputPair.first.first) != get<1>(inputPair.first.second))
+                            arcsign = inputPair.second;
                     }
                 }
             } else if (get<0>(inputPair.first.second) == 'c') {
-                previous_type = get<0>(inputPair.first.first);
                 if (get<0>(inputPair.first.first) == 'v') {
                     if (inputPair.second == true)
                         arcsign = false;
@@ -465,13 +554,22 @@ int main(void)
                         arcsign = true;
                 } else if (get<0>(inputPair.first.first) == 'h')
                     arcsign = inputPair.second;
+                else if (get<0>(inputPair.first.first) == 'c') {
+                    if (!h_not_exist && v_not_exist) {
+                        if (inputPair.second == true)
+                            arcsign = false;
+                        else if (inputPair.second == false)
+                            arcsign = true;
+                    } else if (!v_not_exist && h_not_exist)
+                        arcsign = inputPair.second;
+                }
             }
             
             outPoint = std::make_tuple(type,index,sign);
-            if (previous_type == 'a')
+            if (get<0>(inputPair.first.second) == 'o' || get<0>(inputPair.first.second) == 'u')
                 outputPair = getNextEdge_Crossing(outPoint, arcsign, edgePair);
             else
-                outputPair = getNextEdge_Edge(outPoint, arcsign, edgePair, previous_type);
+                outputPair = getNextEdge_Edge(outPoint, arcsign, edgePair, inputPair.first.first, h_not_exist, v_not_exist);
 
             usedPair->push_back(inputPair);
             tempCircle.push_back(inputPair);
