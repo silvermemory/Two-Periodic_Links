@@ -219,7 +219,7 @@ int main(void)
 //        }
 //    }
     
-    std::string codes = "h1+o1+u2+v1-u1+o2+"; //o1+u2+v1-u1+o2+
+    std::string codes = "h1+o1-u2+,v1+u1-o2+";
     boost::to_lower(codes);
     IV.second_Validation(codes,hor_vertice,ver_vertice,cross_vertice);
     IV.getCombCodes(combine_codes, codes);
@@ -407,8 +407,9 @@ int main(void)
 //    std::cout<<"]\n"<<std::endl;
     
     // print out all edges including edges whose orientations against original directions
-    std::cout << "Number of edges in the Graph:" << (edgePair->size() / 2) << std::endl;
-    std::cout << "Total number of edges both with original : " << edgePair->size() << std::endl;
+    int num_edges = (int)edgePair->size() / 2;
+    std::cout << "Number of edges in the Graph:" << num_edges << std::endl;
+    std::cout << "Total number of edges both with original and against orientations: " << edgePair->size() << std::endl;
     std::cout << "{ ";
     for (Edge_Pair::iterator it = edgePair->begin(); it != edgePair->end(); ++it) {
         if (get<2>((*it).first.first) == true)
@@ -578,7 +579,13 @@ int main(void)
         circleSet->push_back(tempCircle);
         cycle += 1;
     }
-
+    // calculating the Euler characteristic
+    int chi = num_vertices - num_edges + cycle;
+    // calculating supporting genus of a graph
+    int genus = (2 - chi) / 2;
+    
+    std::cout << "Supporting Genus: " << genus << std::endl;
+    
     std::cout << "Number of circles: " << cycle << "; number of cirecles in the set: " << circleSet->size() << std::endl;
     for (Circle::iterator it = circleSet->begin(); it != circleSet->end(); ++it) {
         std::cout << "{ ";
